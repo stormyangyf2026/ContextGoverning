@@ -1591,10 +1591,4 @@ class ConfigService:
 
 ---
 
-## 8. 待决策问题
 
-1. **[已决策] 生产部署方案**：已确定 Phase 1-2 用 IP+端口，Phase 3 前配置域名+Nginx+证书。
-
-2. **[待决策] API版本策略**：URL版本（/api/v1/）vs Header版本？推荐：URL版本，简单直观。
-
-3. **[待决策] 日志与监控**：自建ELK vs 使用云服务日志？推荐：初期用Docker logs + Grafana Loki。
