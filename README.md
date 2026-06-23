@@ -214,4 +214,4 @@ bash verify_endpoints.sh
 
 ## 许可
 
-内部项目 — 公司级使用
+Apache 2.0
