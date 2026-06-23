@@ -1,0 +1,77 @@
+# 统一上下文管理中心 — 子组件集成配置文件模板
+# 当本产品作为子组件嵌入父产品时，父产品通过此文件配置所有集成参数。
+# 将此文件放在父产品项目根目录下，平台启动时会自动加载。
+
+platform:
+  runtime_mode: standalone             # standalone（独立运行）/ embedded（嵌入模式）
+  tenant_mode: single                  # single（单租户）/ multi（多租户，需workspaces表）
+  integration_name: context-platform   # 子组件注册名称，用于路由前缀
+  auto_create_default_workspace: true  # standalone模式下自动创建默认工作区
+  config_file_path: ""                 # 外部配置文件路径（可选，如未指定则使用本文件的其余配置）
+
+network:
+  api_prefix: /api/v1/external         # 外部API前缀
+  cors_origins:                        # 允许的跨域来源
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+  allowed_hosts:                       # 允许的主机名
+    - "*"
+
+auth:
+  mode: api_key                        # api_key（API Key模式）/ jwt（JWT委托验证）/ custom_token（自定义Token回调）
+  # API Key 模式配置
+  api_key_header_name: X-API-Key
+  api_key_prefix: cpk_live             # Key 前缀标识，如 cpk_live_xxxx
+  # JWT 委托验证模式配置（mode=jwt时生效）
+  jwt:
+    issuer: ""                         # JWT签发者
+    jwks_url: ""                       # JWKS端点URL
+    audience: ""                       # Audience claim
+    claim_mapping:                     # JWT claims → 平台内部字段映射
+      sub: user_id                     # JWT sub → 平台 user_id
+      custom:tenant: workspace_id      # 自定义claim → workspace_id
+    default_role: consultant           # 无角色映射时的默认角色
+  # 自定义Token模式配置（mode=custom_token时生效）
+  custom_token:
+    verify_url: ""                     # 回调验证URL，POST {token} → 返回用户信息
+    token_header_name: Authorization
+    token_prefix: Bearer
+    cache_ttl_seconds: 300             # 验证结果缓存时间
+    request_template: |                # 请求模板（Go template格式）
+      {
+        "token": "{{.Token}}"
+      }
+    response_mapping:                  # 响应字段映射
+      user_id: .user_id
+      workspace_id: .tenant_id
+      role: .role
+
+ui:
+  embedding_mode: iframe               # iframe / web_component / api_only
+  allowed_origins:                     # iframe嵌入允许的父页面域名
+    - "*"
+  theme:
+    primary_color: "#2563EB"           # 主题色
+    locale: zh-CN                      # 语言
+    enable_dark_mode: true             # 是否启用暗色模式
+
+features:
+  ingestion_enabled: true              # 采集管道开关
+  graph_enabled: true                  # 知识图谱开关
+  memory_import_enabled: true          # Memory.md导入开关
+  feishu_integration_enabled: false    # 飞书集成开关
+  email_collection_enabled: false      # 邮件采集开关
+  finance_data_enabled: false          # 财报数据采集开关
+  review_required: true                # 上下文入库是否需要审核
+  auto_confidence: true                # 是否启用自动可信度评估
+  push_notifications: true             # 是否启用推送通知
+  webhook_emitter: false               # 是否启用Webhook事件发射器
+
+quotas:
+  max_contexts: 100000                 # 最大上下文条目数
+  max_entities: 50000                  # 最大实体数
+  max_users: 100                       # 最大用户数（standalone模式）
+  max_workspaces: 10                   # 最大工作区数（multi模式）
+  max_api_calls_per_minute: 600        # 每分钟API调用限制
+  max_llm_calls_per_hour: 1000         # 每小时LLM调用限制
+  max_storage_gb: 50                   # 最大存储空间（GB）

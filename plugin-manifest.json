@@ -1,0 +1,38 @@
+{
+  "name": "context-platform",
+  "version": "1.0.0",
+  "description": "统一上下文管理中心 — 公司级上下文管理与消费平台",
+  "type": "application",
+  "api_prefix": "/api/v1",
+  "external_api_prefix": "/api/v1/external",
+  "endpoints": {
+    "internal": 42,
+    "external": 27,
+    "mcp_tools": 8
+  },
+  "authentication": {
+    "methods": ["api_key", "jwt_delegation", "custom_token"],
+    "api_key_header": "X-API-Key",
+    "jwt_header": "Authorization"
+  },
+  "ui_embedding": {
+    "iframe": { "url_pattern": "/embed/{page}", "message_protocol": "postMessage" },
+    "web_component": ["<context-search>", "<context-detail>", "<entity-graph>", "<metrics-overview>"]
+  },
+  "webhook_events": [
+    "context.created", "context.updated", "context.deleted",
+    "context.status_changed", "context.confidence_changed",
+    "relation.created", "relation.deleted",
+    "entity.created", "entity.updated",
+    "user.created", "user.updated",
+    "workspace.created", "workspace.updated",
+    "quota.warning"
+  ],
+  "databases": ["PostgreSQL 16+", "pgvector", "Qdrant", "Redis"],
+  "sdks": {
+    "python": "sdk/python",
+    "typescript": "sdk/typescript"
+  },
+  "health_check": "/api/v1/external/health",
+  "docs_url": "/docs"
+}
